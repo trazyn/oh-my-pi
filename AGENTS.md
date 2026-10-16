@@ -344,3 +344,7 @@ Location: `packages/*/CHANGELOG.md` (per package).
 2. Run `bun run release`.
 
 The script handles version bump, CHANGELOG finalization, commit, tag, publish, and adding new `[Unreleased]` sections.
+
+## Fork Notes
+
+This checkout is the `trazyn/oh-my-pi` fork. Fork-local changes (the OpenCode free-tier gate fix, the `amp` binary workflow and installer, the fork README install section) are recorded in `FORK.md`. Never update by resetting to upstream (`git reset --hard upstream/main`); rebase so the fork commits stay on top, and update `FORK.md` whenever fork-local changes are added or dropped.
