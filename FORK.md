@@ -48,16 +48,17 @@ rebase, confirm the tests above still pass against upstream behavior, and update
 Upstream's `omp.sh` binaries do not contain the gate fix, so the fork builds and publishes
 its own:
 
-- `.github/workflows/build-binaries.yml` — native per-platform builds on GitHub-hosted
-  runners (macOS arm64 on `macos-15`, macOS x64 on `macos-15-intel`, Linux x64 on
-  `ubuntu-22.04`), each smoke-tested (`--version`, `--smoke-test`) before upload.
-  Trigger: push a tag `v<version>-build.<n>`
-  (e.g. `git tag v18.11.2-build.1 && git push origin v18.11.2-build.1`).
-- Rolling GitHub Release **`amp-latest`** — assets `amp-darwin-arm64`, `amp-darwin-x64`,
-  `amp-linux-x64`, `SHA256SUMS`. Workflow artifacts require a GitHub login to download;
+- `.github/workflows/build-binaries.yml` — native macOS builds on GitHub-hosted runners
+  (`macos-15` arm64, `macos-15-intel` x64), each smoke-tested (`--version`, `--smoke-test`)
+  before upload (a short-lived Linux leg was removed; its asset is cleaned up by the next
+  publish). Trigger: push a tag `v<version>-build.<n>`
+  (e.g. `git tag v18.11.2-build.3 && git push origin v18.11.2-build.3`).
+- Rolling GitHub Release **`amp-latest`** — macOS-only assets `amp-darwin-arm64`,
+  `amp-darwin-x64`, `SHA256SUMS`. Workflow artifacts require a GitHub login to download;
   release assets do not, which is why the installer uses the release.
-- `scripts/install-amp.sh` — the curl installer (macOS arm64/x64 incl. Rosetta detection,
-  Linux x86_64 glibc; verifies `SHA256SUMS`; installs as `amp`, default `~/.local/bin`):
+- `scripts/install-amp.sh` — the curl installer (macOS arm64/x64 incl. Rosetta detection;
+  verifies `SHA256SUMS`; installs as `amp`, default `~/.local/bin`; on Linux it points at
+  building from source):
 
   ```sh
   curl -fsSL https://raw.githubusercontent.com/trazyn/oh-my-pi/main/scripts/install-amp.sh | sh

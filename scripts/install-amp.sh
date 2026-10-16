@@ -8,7 +8,7 @@ set -e
 # GitHub Release as `amp` (default: ~/.local/bin/amp), verified against the
 # release's SHA256SUMS.
 #
-# Published platforms: macOS (arm64, x86_64) and Linux (x86_64, glibc).
+# Published platforms: macOS (arm64, x86_64).
 # Binaries are ad-hoc signed on macOS; curl downloads carry no quarantine
 # attribute, so Gatekeeper does not block them.
 #
@@ -35,15 +35,10 @@ case "$OS" in
             x86_64) ASSET="amp-darwin-x64" ;;
         esac
         ;;
-    Linux)
-        case "$ARCH" in
-            x86_64|amd64) ASSET="amp-linux-x64" ;;
-        esac
-        ;;
 esac
 if [ -z "$ASSET" ]; then
     echo "install-amp: no prebuilt binary for ${OS}/${ARCH}" >&2
-    echo "install-amp: published platforms are macOS (arm64, x86_64) and Linux (x86_64, glibc)." >&2
+    echo "install-amp: published platforms are macOS (arm64, x86_64)." >&2
     echo "install-amp: build from source instead: git clone https://github.com/${REPO} && bun run setup" >&2
     exit 1
 fi

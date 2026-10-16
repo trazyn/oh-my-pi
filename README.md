@@ -34,15 +34,15 @@ The most capable agent surface that ships. Continuously tuned by real-world use 
 
 ## Install
 
-**macOS · Linux**
+**macOS**
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/trazyn/oh-my-pi/main/scripts/install-amp.sh | sh
 ```
 
-Installs the latest prebuilt binary from this fork's rolling [`amp-latest`](https://github.com/trazyn/oh-my-pi/releases/tag/amp-latest) GitHub Release as `amp` (default `~/.local/bin`), verified against the release's `SHA256SUMS`. Binaries are built and smoke-tested on the matching platform by the [Build binaries workflow](https://github.com/trazyn/oh-my-pi/actions/workflows/build-binaries.yml); set `AMP_INSTALL_DIR` to change the install directory.
+Installs the latest prebuilt macOS binary (Apple Silicon or Intel) from this fork's rolling [`amp-latest`](https://github.com/trazyn/oh-my-pi/releases/tag/amp-latest) GitHub Release as `amp` (default `~/.local/bin`), verified against the release's `SHA256SUMS`. Binaries are built and smoke-tested by the [Build binaries workflow](https://github.com/trazyn/oh-my-pi/actions/workflows/build-binaries.yml); set `AMP_INSTALL_DIR` to change the install directory.
 
-> **Alpine / musl:** the prebuilt Linux binary targets glibc; on Alpine build from source (`bun run setup`) instead.
+> **Linux:** this fork publishes no prebuilt Linux binary; build from source (`bun run setup`) instead.
 
 **Homebrew**
 

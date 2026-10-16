@@ -40,7 +40,6 @@ jobs:
             include:
                - { runner: macos-15, target: darwin-arm64 }
                - { runner: macos-15-intel, target: darwin-x64 }
-               - { runner: ubuntu-22.04, target: linux-x64 }
       runs-on: ${{ matrix.runner }}
       steps:
          - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -107,10 +106,12 @@ jobs:
            run: |
               set -euo pipefail
               cd dist
-              sha256sum amp-darwin-arm64 amp-darwin-x64 amp-linux-x64 > SHA256SUMS
+              sha256sum amp-darwin-arm64 amp-darwin-x64 > SHA256SUMS
               if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
                 gh release create "$RELEASE_TAG" --latest=false \
                   --title "amp (rolling latest)" \
                   --notes "Rolling prebuilt binaries from the Build binaries workflow. Install with: curl -fsSL https://raw.githubusercontent.com/trazyn/oh-my-pi/main/scripts/install-amp.sh | sh"
               fi
-              gh release upload "$RELEASE_TAG" --clobber amp-darwin-arm64 amp-darwin-x64 amp-linux-x64 SHA256SUMS
+              gh release upload "$RELEASE_TAG" --clobber amp-darwin-arm64 amp-darwin-x64 SHA256SUMS
+              # The linux leg was removed: drop its asset if an earlier run left one.
+              gh release delete-asset "$RELEASE_TAG" amp-linux-x64 --yes 2>/dev/null || true
