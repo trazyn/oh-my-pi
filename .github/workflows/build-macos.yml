@@ -1,0 +1,79 @@
+name: Build macOS binaries
+
+# Fork-only workflow (trazyn/oh-my-pi): builds both macOS binaries natively,
+# one leg per architecture, so every artifact is compiled, ad-hoc signed, and
+# smoke-tested on the hardware that will run it. Upstream builds macOS from
+# Linux via bazel cross toolchains and signs with rcodesign (ci.yml
+# `release_binary`); this fork variant needs no bazel setup and no Apple
+# secrets, and each leg verifies the exact bytes it uploads.
+#
+# Run it from Actions -> "Build macOS binaries" -> Run workflow, then download
+# the `amp-darwin-arm64` / `amp-darwin-x64` artifacts. Browser downloads carry
+# the quarantine bit (curl/scp do not): clear it on the target Mac with
+# `xattr -d com.apple.quarantine amp-darwin-<arch>` before the first run.
+# If Developer ID secrets are configured later, `scripts/ci-macos-sign.sh` can
+# replace the ad-hoc signature (see docs/macos-signing-notarization.md).
+
+on:
+   workflow_dispatch:
+   push:
+      tags: ["v*"]
+
+permissions:
+   contents: read
+
+concurrency:
+   group: build-macos-${{ github.ref }}
+   cancel-in-progress: true
+
+jobs:
+   build:
+      name: "macOS binary: ${{ matrix.target }}"
+      # The first run downloads the pinned nightly toolchain and compiles the
+      # Rust addon from scratch; later legs reuse the runner's warm caches.
+      timeout-minutes: 60
+      strategy:
+         fail-fast: false
+         matrix:
+            include:
+               - { runner: macos-15, target: darwin-arm64 }
+               - { runner: macos-15-intel, target: darwin-x64 }
+      runs-on: ${{ matrix.runner }}
+      steps:
+         - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+         - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+         - name: Install dependencies
+           run: bun install --frozen-lockfile
+         # Host Cargo/N-API path (bazelisk is absent, so the build script falls
+         # back to cargo): builds and version-stamps the addon for this
+         # runner's own triple; x64 picks modern/baseline from CPU AVX2.
+         - name: Build native addon
+           run: bun --cwd=packages/natives run build
+         # `bun build --compile` for the runner's own platform; the script
+         # ad-hoc signs the Mach-O (codesign + entitlements) on macOS hosts.
+         - name: Build binary
+           env:
+              CROSS_TARGET: ${{ matrix.target }}
+           run: bun --cwd=packages/coding-agent run build
+         # The same gate upstream `release_smoke` applies, before upload:
+         # signature check, then a real launch (`--version`, `--smoke-test`)
+         # in a throwaway home, proving the artifact on this OS and CPU.
+         - name: Smoke-test binary
+           env:
+              BINARY: packages/coding-agent/dist/omp-${{ matrix.target }}
+           run: |
+              set -euo pipefail
+              codesign --verify --strict --verbose=2 "$BINARY"
+              runtime_dir="$(mktemp -d)"
+              HOME="$runtime_dir/home" XDG_DATA_HOME="$runtime_dir/xdg" "$BINARY" --version
+              HOME="$runtime_dir/home" XDG_DATA_HOME="$runtime_dir/xdg" "$BINARY" --smoke-test
+         # Same rename the local install uses (`~/.bun/bin/amp` -> dist/amp);
+         # the version banner still reports `omp/<version>`.
+         - name: Rename to amp
+           run: mv "packages/coding-agent/dist/omp-${{ matrix.target }}" "packages/coding-agent/dist/amp-${{ matrix.target }}"
+         - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+           with:
+              name: amp-${{ matrix.target }}
+              path: packages/coding-agent/dist/amp-${{ matrix.target }}
+              if-no-files-found: error
+              retention-days: 30
