@@ -37,12 +37,12 @@ The most capable agent surface that ships. Continuously tuned by real-world use 
 **macOS · Linux**
 
 ```sh
-curl -fsSL https://omp.sh/install | sh
+curl -fsSL https://raw.githubusercontent.com/trazyn/oh-my-pi/main/scripts/install-amp.sh | sh
 ```
 
-Without a usable bun (or with `--binary`), the install scripts fetch the prebuilt binary from `build.stencil.so` and check its SHA-256 before installing it. Pin a release with `curl -fsSL https://omp.sh/install | sh -s -- --binary --ref v<version>` (PowerShell: `-Binary -Ref v<version>`).
+Installs the latest prebuilt binary from this fork's rolling [`amp-latest`](https://github.com/trazyn/oh-my-pi/releases/tag/amp-latest) GitHub Release as `amp` (default `~/.local/bin`), verified against the release's `SHA256SUMS`. Binaries are built and smoke-tested on the matching platform by the [Build binaries workflow](https://github.com/trazyn/oh-my-pi/actions/workflows/build-binaries.yml); set `AMP_INSTALL_DIR` to change the install directory.
 
-> **Alpine / musl:** the prebuilt musl binary links `libstdc++`/`libgcc` dynamically, which stock Alpine does not ship. Install them first: `apk add libstdc++ libgcc`.
+> **Alpine / musl:** the prebuilt Linux binary targets glibc; on Alpine build from source (`bun run setup`) instead.
 
 **Homebrew**
 
