@@ -99,6 +99,10 @@ jobs:
          - name: Upload release assets
            env:
               GH_TOKEN: ${{ github.token }}
+              # gh never falls back to GITHUB_REPOSITORY and this job has no
+              # checkout, so repo context must be explicit or gh exits with
+              # "failed to determine base repo".
+              GH_REPO: ${{ github.repository }}
               RELEASE_TAG: amp-latest
            run: |
               set -euo pipefail
