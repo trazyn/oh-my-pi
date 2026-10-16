@@ -15,6 +15,9 @@
 
 ### Fixed
 
+- Fixed OpenCode Zen/Go free models rejecting requests with `403 FreeTierError`: free-tier requests now present the canonical client identity the gateway decodes — the `opencode/*` User-Agent and a `ses_` session token encoding OpenCode's time identifier with a conversation-derived tail ([#12306](https://github.com/can1357/oh-my-pi/issues/12306))
+- Fixed OpenCode free-tier 403 on tool-less auxiliary calls (advisors, one-shot helpers): the gate additionally requires the `read` tool name in the request body, so requests built without it are padded with an inert stub on both dispatch funnels ([#12306](https://github.com/can1357/oh-my-pi/issues/12306))
+- Fixed OpenCode `403 FreeTierError` being treated as an auth failure: it no longer rotates sibling credentials or invalidates the stored key, and the surfaced message explains the model-scoped restriction ([#12306](https://github.com/can1357/oh-my-pi/issues/12306))
 - Fixed error results from non-first-party providers regaining partial output the provider had discarded; an error with empty content now stays empty ([#14516](https://github.com/can1357/oh-my-pi/issues/14516), [#14572](https://github.com/can1357/oh-my-pi/pull/14572) by [@oleg494](https://github.com/oleg494))
 - Fixed the auth gateway's `POST /v1/audio/speech` answering 502 for requests the speech adapter rejects (unsupported format, over-long input); they now get 400 `invalid_request_error` ([#14508](https://github.com/can1357/oh-my-pi/pull/14508) by [@F0Rextasy](https://github.com/F0Rextasy))
 - Fixed a single-string tool call with two or more mislabelled string fields silently dispatching whichever field came first in the JSON; such ambiguous calls now fail validation and the model sees its own arguments back ([#14414](https://github.com/can1357/oh-my-pi/pull/14414) by [@F0Rextasy](https://github.com/F0Rextasy))

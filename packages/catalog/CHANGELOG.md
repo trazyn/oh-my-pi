@@ -8,9 +8,13 @@
 
 - Added `keep-bundled-names` catalog attribute to preserve static model display names during discovery
 - Updated `openai-codex` provider configuration to prevent model name regressions during live discovery
+### Added
+
+- Added `wire/opencode` helpers exposing the OpenCode gateway client-identity and free-tier body-gate contracts (canonical User-Agent, time-encoded `ses_` session tokens, gate tool-name padding) ([#12306](https://github.com/can1357/oh-my-pi/issues/12306))
 
 ### Changed
 
+- OpenCode Zen/Go live model discovery now attributes with the canonical OpenCode client identity (`opencode/*` User-Agent + `ses_` session token) instead of omp's UA and raw install id ([#12306](https://github.com/can1357/oh-my-pi/issues/12306))
 - GPT Image models (`gpt-image-*`, `chatgpt-image-*`) now classify as their own `gpt-image` family instead of `gpt` or `chatgpt`, so GPT chat-model rules no longer apply to them ([#14619](https://github.com/can1357/oh-my-pi/pull/14619) by [@jimhester](https://github.com/jimhester))
 
 ### Fixed

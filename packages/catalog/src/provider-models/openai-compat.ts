@@ -64,6 +64,7 @@ import {
 	mergeCopilotApiHeaders,
 	parseGitHubCopilotApiKey,
 } from "../wire/github-copilot";
+import { OPENCODE_USER_AGENT, toOpenCodeSessionToken } from "../wire/opencode";
 import {
 	SINGULARITYAPI_DEV_API_BASE_URL,
 	SINGULARITYAPI_TECH_API_BASE_URL,
@@ -3467,10 +3468,13 @@ function openCodeModelManagerOptions(
 					baseUrl: discoveryBaseUrl,
 					apiKey,
 					// Live discovery hits the OpenCode gateway outside any
-					// conversation: attribute with the stable install id
-					// (x-opencode-session required from 09/06) and omp's UA
+					// conversation: attribute with the canonical client identity
+					// (x-opencode-session + opencode/* UA, see wire/opencode)
 					// instead of Bun's default.
-					headers: { "User-Agent": USER_AGENT, "x-opencode-session": getInstallId() },
+					headers: {
+						"User-Agent": OPENCODE_USER_AGENT,
+						"x-opencode-session": toOpenCodeSessionToken(getInstallId()),
+					},
 					mapModel: (entry, defaults) => {
 						const reference = references.get(defaults.id);
 						const name = toModelName(entry.name, reference?.name ?? defaults.name);
