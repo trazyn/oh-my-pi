@@ -6,6 +6,9 @@
  * is `opencode/<version>`, an `x-opencode-session` whose 12-hex head decodes
  * as OpenCode's `descending()` time identifier, and a non-empty `tools[]`
  * carrying the `read` name ([#12306](https://github.com/can1357/oh-my-pi/issues/12306)).
+ *
+ * Live-gateway evidence, invariants, and regression guards are recorded in
+ * `docs/opencode-free-tier-gate.md` — read it before changing this wire shape.
  */
 
 /**
